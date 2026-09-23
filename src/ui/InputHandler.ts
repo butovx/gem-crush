@@ -25,6 +25,19 @@ export class InputHandler extends EventEmitter<InputEvents> {
     super();
     document.addEventListener('pointerup', () => {
       this.dragging = false;
+      this.dragStart = null;
+    });
+
+    // Touch dragging tracking
+    document.addEventListener('pointermove', (e: PointerEvent) => {
+      if (!this._enabled || !this.dragging || !this.dragStart) return;
+      const target = document.elementFromPoint(e.clientX, e.clientY);
+      const cell = target?.closest('.cell') as HTMLElement | null;
+      if (cell && cell.dataset.row !== undefined && cell.dataset.col !== undefined) {
+        const r = parseInt(cell.dataset.row, 10);
+        const c = parseInt(cell.dataset.col, 10);
+        this.handlePointerEnter(r, c);
+      }
     });
 
     // Keyboard navigation (Arrow keys + Enter/Space)
