@@ -1,71 +1,124 @@
 // ─────────────────────────────────────────────
-// Board Renderer — DOM-based board rendering
+// Board Renderer — High-performance persistent DOM grid
 // ─────────────────────────────────────────────
 
 import { ROWS, COLS, GEM_CONFIGS } from '../core/constants';
 import type { Board } from '../core/Board';
 
+interface CellRecord {
+  cell: HTMLElement;
+  gem: HTMLElement;
+  sym: HTMLElement;
+  type: number;
+}
+
+type PointerDownFn = (row: number, col: number, e: PointerEvent) => void;
+type PointerEnterFn = (row: number, col: number, e: PointerEvent) => void;
+
 /**
- * Renders the game board as a grid of DOM elements.
- * Each cell contains a styled gem div with type-specific
- * gradients, shadows, and a symbol icon.
+ * Renders the game board as a persistent grid of DOM elements.
+ * Cell elements are created once and updated in-place to eliminate
+ * layout thrashing and garbage collection pauses.
  */
 export class BoardRenderer {
   private boardEl: HTMLElement;
+  private cells: CellRecord[] = [];
+  private onPointerDown?: PointerDownFn;
+  private onPointerEnter?: PointerEnterFn;
 
   constructor(boardEl: HTMLElement) {
     this.boardEl = boardEl;
   }
 
   /**
-   * Full re-render of the board from grid state.
-   * @param board - Board instance to read gem types from
-   * @param onPointerDown - Cell click/tap handler
-   * @param onPointerEnter - Cell drag-enter handler
+   * Initializes the persistent DOM grid once.
    */
-  render(
-    board: Board,
-    onPointerDown: (row: number, col: number, e: PointerEvent) => void,
-    onPointerEnter: (row: number, col: number, e: PointerEvent) => void,
-  ): void {
+  initGrid(onPointerDown?: PointerDownFn, onPointerEnter?: PointerEnterFn): void {
+    if (onPointerDown) this.onPointerDown = onPointerDown;
+    if (onPointerEnter) this.onPointerEnter = onPointerEnter;
+
+    // If already initialized, do not rebuild DOM
+    if (this.cells.length === ROWS * COLS) {
+      return;
+    }
+
     this.boardEl.innerHTML = '';
+    this.cells = [];
+
+    const fragment = document.createDocumentFragment();
 
     for (let r = 0; r < ROWS; r++) {
       for (let c = 0; c < COLS; c++) {
         const cell = document.createElement('div');
-        cell.className = 'cell';
+        cell.className = 'cell empty';
         cell.dataset.row = String(r);
         cell.dataset.col = String(c);
 
-        const type = board.getType(r, c);
-        if (type >= 0) {
-          const gem = this.createGemElement(type);
-          cell.appendChild(gem);
-        }
+        const gem = document.createElement('div');
+        gem.className = 'gem';
 
-        cell.addEventListener('pointerdown', (e) => onPointerDown(r, c, e));
-        cell.addEventListener('pointerenter', (e) => onPointerEnter(r, c, e));
-        this.boardEl.appendChild(cell);
+        const sym = document.createElement('span');
+        sym.className = 'sym';
+        gem.appendChild(sym);
+        cell.appendChild(gem);
+
+        cell.addEventListener('pointerdown', (e) => {
+          this.onPointerDown?.(r, c, e);
+        });
+        cell.addEventListener('pointerenter', (e) => {
+          this.onPointerEnter?.(r, c, e);
+        });
+
+        fragment.appendChild(cell);
+        this.cells.push({ cell, gem, sym, type: -1 });
+      }
+    }
+
+    this.boardEl.appendChild(fragment);
+  }
+
+  /**
+   * Updates existing DOM elements in-place from board state.
+   */
+  render(
+    board: Board,
+    onPointerDown?: PointerDownFn,
+    onPointerEnter?: PointerEnterFn,
+  ): void {
+    if (this.cells.length !== ROWS * COLS) {
+      this.initGrid(onPointerDown, onPointerEnter);
+    } else {
+      if (onPointerDown) this.onPointerDown = onPointerDown;
+      if (onPointerEnter) this.onPointerEnter = onPointerEnter;
+    }
+
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        const idx = r * COLS + c;
+        const record = this.cells[idx];
+        const newType = board.getType(r, c);
+
+        if (record.type === newType) continue;
+
+        record.type = newType;
+
+        if (newType < 0) {
+          record.cell.classList.add('empty');
+          record.gem.className = 'gem';
+          record.sym.textContent = '';
+        } else {
+          record.cell.classList.remove('empty');
+          record.gem.className = `gem gem-${newType}`;
+          const config = GEM_CONFIGS[newType];
+          record.sym.textContent = config ? config.symbol : '';
+        }
       }
     }
   }
 
-  /** Create a gem DOM element with type-specific styling */
-  private createGemElement(type: number): HTMLElement {
-    const config = GEM_CONFIGS[type];
-    const gem = document.createElement('div');
-    gem.className = `gem gem-${type}`;
-
-    const sym = document.createElement('span');
-    sym.className = 'sym';
-    sym.textContent = config.symbol;
-    gem.appendChild(sym);
-
-    return gem;
-  }
-
   /** Get a cell element by (row, col) */
   getCell(row: number, col: number): HTMLElement | null {
-    return this.boardEl.children[row * COLS + col] as HTMLElement | null;
+    const idx = row * COLS + col;
+    return this.cells[idx]?.cell ?? (this.boardEl.children[idx] as HTMLElement | null);
   }
 }

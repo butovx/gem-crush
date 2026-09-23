@@ -79,12 +79,12 @@ export const GEM_CONFIGS: readonly GemConfig[] = [
 
 /** Timing constants (ms) */
 export const TIMING = {
-  SWAP: 250,
-  MATCH_POP: 350,
-  GRAVITY_DROP: 420,
-  GEM_APPEAR: 400,
-  COMBO_BANNER: 1200,
-  FLOAT_SCORE: 900,
+  SWAP: 200,
+  MATCH_POP: 260,
+  GRAVITY_DROP: 300,
+  GEM_APPEAR: 300,
+  COMBO_BANNER: 1000,
+  FLOAT_SCORE: 800,
   HINT_DURATION: 3000,
   AUTO_HINT_DELAY: 8000,
   GAME_OVER_DELAY: 500,

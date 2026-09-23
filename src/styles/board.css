@@ -8,18 +8,20 @@
   width: var(--board-size);
   height: var(--board-size);
   border-radius: var(--radius-lg);
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(14, 10, 28, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow:
-    0 0 70px var(--color-glow-purple),
-    inset 0 0 50px rgba(120, 80, 220, 0.12);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+    0 0 50px rgba(120, 80, 220, 0.25),
+    inset 0 0 40px rgba(120, 80, 220, 0.15);
+  contain: layout paint;
   padding: var(--gap);
   display: grid;
   grid-template-columns: repeat(8, 1fr);
   grid-template-rows: repeat(8, 1fr);
   gap: var(--gap);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
 }
 
 /* ── Cell ── */
@@ -27,15 +29,24 @@
   position: relative;
   border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: transform 0.12s ease;
+  transition: transform 0.1s ease;
+  contain: layout style;
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 .cell:hover {
-  transform: scale(1.08);
+  transform: scale(1.06) translateZ(0);
 }
 
 .cell.selected {
   animation: pulse-select 0.6s ease-in-out infinite;
+}
+
+.cell.empty .gem {
+  opacity: 0;
+  visibility: hidden;
 }
 
 /* ── Gem base ── */
@@ -43,8 +54,11 @@
   position: absolute;
   inset: 12%;
   border-radius: 50%;
-  transition: opacity 0.2s;
   pointer-events: none;
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  transition: opacity 0.15s ease;
 }
 
 .gem::before {

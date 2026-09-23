@@ -1,43 +1,75 @@
 // ─────────────────────────────────────────────
-// Background Renderer — Starfield & Nebula
+// Background Renderer — Optimized Starfield & Nebula
 // ─────────────────────────────────────────────
 
 interface Star {
   x: number;
   y: number;
-  radius: number;
+  size: number;
   speed: number;
   alpha: number;
   pulse: number;
 }
 
 /**
- * Renders an animated cosmic background with nebula blobs
- * and twinkling stars on a full-screen canvas.
+ * Renders an animated cosmic background with pre-rendered nebula blobs
+ * and twinkling stars with minimal GPU fillrate and CPU overhead.
  */
 export class BackgroundRenderer {
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
+  private nebulaCanvas: HTMLCanvasElement;
+  private nebulaCtx: CanvasRenderingContext2D;
   private stars: Star[] = [];
   private width = 0;
   private height = 0;
   private animFrameId = 0;
 
-  private static readonly STAR_COUNT = 120;
+  private static readonly STAR_COUNT = 70;
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
-    this.ctx = canvas.getContext('2d')!;
+    this.ctx = canvas.getContext('2d', { alpha: false })!;
+    this.nebulaCanvas = document.createElement('canvas');
+    this.nebulaCtx = this.nebulaCanvas.getContext('2d')!;
+
     this.resize();
     this.initStars();
 
-    window.addEventListener('resize', () => this.resize());
+    window.addEventListener('resize', () => {
+      this.resize();
+    });
+
     this.startLoop();
   }
 
   private resize(): void {
     this.width = this.canvas.width = window.innerWidth;
     this.height = this.canvas.height = window.innerHeight;
+
+    // Pre-render static nebula gradients to offscreen canvas
+    this.nebulaCanvas.width = this.width;
+    this.nebulaCanvas.height = this.height;
+    this.renderNebulaOffscreen();
+  }
+
+  /** Pre-renders nebula once when window size changes */
+  private renderNebulaOffscreen(): void {
+    const { nebulaCtx: ctx, width: w, height: h } = this;
+    ctx.fillStyle = '#0a0614';
+    ctx.fillRect(0, 0, w, h);
+
+    const drawBlob = (cx: number, cy: number, radius: number, color: string) => {
+      const gradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
+      gradient.addColorStop(0, color);
+      gradient.addColorStop(1, 'transparent');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, w, h);
+    };
+
+    drawBlob(w * 0.3, h * 0.4, w * 0.55, 'rgba(90, 24, 154, 0.16)');
+    drawBlob(w * 0.75, h * 0.6, w * 0.45, 'rgba(199, 125, 255, 0.08)');
+    drawBlob(w * 0.5, h * 0.85, w * 0.4, 'rgba(255, 111, 216, 0.07)');
   }
 
   private initStars(): void {
@@ -46,48 +78,37 @@ export class BackgroundRenderer {
       this.stars.push({
         x: Math.random() * 2000,
         y: Math.random() * 2000,
-        radius: Math.random() * 1.5 + 0.3,
-        speed: Math.random() * 0.3 + 0.05,
-        alpha: Math.random() * 0.6 + 0.3,
+        size: Math.random() * 1.6 + 0.6,
+        speed: Math.random() * 0.25 + 0.05,
+        alpha: Math.random() * 0.5 + 0.4,
         pulse: Math.random() * Math.PI * 2,
       });
     }
   }
 
-  /** Draw a radial nebula blob */
-  private drawNebula(cx: number, cy: number, radius: number, color: string): void {
-    const gradient = this.ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
-    gradient.addColorStop(0, color);
-    gradient.addColorStop(1, 'transparent');
-    this.ctx.fillStyle = gradient;
-    this.ctx.fillRect(0, 0, this.width, this.height);
-  }
-
   private startLoop(): void {
     let lastTime = 0;
     const draw = (timestamp: number) => {
-      if (timestamp - lastTime < 16) {
+      // Throttle to ~60 FPS max if display runs higher, avoiding excess draw calls
+      if (timestamp - lastTime < 14) {
         this.animFrameId = requestAnimationFrame(draw);
         return;
       }
       lastTime = timestamp;
+
       const { ctx, width: w, height: h } = this;
-      ctx.clearRect(0, 0, w, h);
 
-      // Nebula blobs
-      this.drawNebula(w * 0.3, h * 0.4, w * 0.5, 'rgba(90, 24, 154, 0.12)');
-      this.drawNebula(w * 0.75, h * 0.6, w * 0.4, 'rgba(199, 125, 255, 0.06)');
-      this.drawNebula(w * 0.5, h * 0.8, w * 0.35, 'rgba(255, 111, 216, 0.05)');
+      // Fast single-blit background from offscreen pre-rendered nebula
+      ctx.drawImage(this.nebulaCanvas, 0, 0);
 
-      // Stars
-      for (const star of this.stars) {
+      // Render stars
+      for (let i = 0; i < this.stars.length; i++) {
+        const star = this.stars[i];
         star.pulse += 0.02;
-        const alpha = star.alpha * (0.6 + 0.4 * Math.sin(star.pulse));
+        const currentAlpha = star.alpha * (0.6 + 0.4 * Math.sin(star.pulse));
 
-        ctx.beginPath();
-        ctx.arc(star.x % w, star.y % h, star.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255,255,255,${alpha})`;
-        ctx.fill();
+        ctx.fillStyle = `rgba(255, 255, 255, ${currentAlpha.toFixed(2)})`;
+        ctx.fillRect(star.x % w, star.y % h, star.size, star.size);
 
         star.y += star.speed;
         if (star.y > h + 5) {

@@ -51,8 +51,12 @@ new BackgroundRenderer(
 // UI instances
 const boardEl = querySelector('#board');
 const animManager = new AnimationManager(boardEl);
-const boardRenderer = new BoardRenderer(boardEl);
 const input = new InputHandler();
+const boardRenderer = new BoardRenderer(boardEl);
+boardRenderer.initGrid(
+  (row, col, e) => input.handlePointerDown(row, col, e),
+  (row, col) => input.handlePointerEnter(row, col),
+);
 const hud = new HUD(
   querySelector('#score'),
   querySelector('#moves'),
@@ -121,11 +125,7 @@ function resetAutoHint(): void {
 // ─────────────────────────────────────────────
 
 function renderBoard(): void {
-  boardRenderer.render(
-    board,
-    (row, col, e) => input.handlePointerDown(row, col, e),
-    (row, col) => input.handlePointerEnter(row, col),
-  );
+  boardRenderer.render(board);
 }
 
 // ─────────────────────────────────────────────

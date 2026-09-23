@@ -1,8 +1,9 @@
 // ─────────────────────────────────────────────
-// Input Handler — Pointer/touch → game actions
+// Input Handler — Smooth zero-reflow gesture & pointer input
 // ─────────────────────────────────────────────
 
 import { EventEmitter } from '../utils/EventEmitter';
+import { ROWS, COLS } from '../core/constants';
 
 export interface InputEvents {
   [key: string]: unknown[];
@@ -13,30 +14,60 @@ export interface InputEvents {
 /**
  * Handles pointer/touch input and translates it into
  * game actions (cell selection, swap requests).
- * Supports both click-to-select and drag-to-swap.
+ * Uses direct vector math for swipes to eliminate forced reflows.
  */
 export class InputHandler extends EventEmitter<InputEvents> {
   private selected: { row: number; col: number } | null = null;
   private dragging = false;
   private dragStart: { row: number; col: number } | null = null;
+  private startPointerPos: { x: number; y: number } | null = null;
   private _enabled = true;
+
+  private static readonly SWIPE_THRESHOLD = 20; // pixels
 
   constructor() {
     super();
+
     document.addEventListener('pointerup', () => {
       this.dragging = false;
       this.dragStart = null;
+      this.startPointerPos = null;
     });
 
-    // Touch dragging tracking
+    document.addEventListener('pointercancel', () => {
+      this.dragging = false;
+      this.dragStart = null;
+      this.startPointerPos = null;
+    });
+
+    // High performance swipe detection without elementFromPoint / forced reflow
     document.addEventListener('pointermove', (e: PointerEvent) => {
-      if (!this._enabled || !this.dragging || !this.dragStart) return;
-      const target = document.elementFromPoint(e.clientX, e.clientY);
-      const cell = target?.closest('.cell') as HTMLElement | null;
-      if (cell && cell.dataset.row !== undefined && cell.dataset.col !== undefined) {
-        const r = parseInt(cell.dataset.row, 10);
-        const c = parseInt(cell.dataset.col, 10);
-        this.handlePointerEnter(r, c);
+      if (!this._enabled || !this.dragging || !this.dragStart || !this.startPointerPos) return;
+
+      const dx = e.clientX - this.startPointerPos.x;
+      const dy = e.clientY - this.startPointerPos.y;
+      const absDx = Math.abs(dx);
+      const absDy = Math.abs(dy);
+
+      if (Math.max(absDx, absDy) >= InputHandler.SWIPE_THRESHOLD) {
+        const { row, col } = this.dragStart;
+        let targetRow = row;
+        let targetCol = col;
+
+        if (absDx > absDy) {
+          targetCol += dx > 0 ? 1 : -1;
+        } else {
+          targetRow += dy > 0 ? 1 : -1;
+        }
+
+        this.dragging = false;
+        this.dragStart = null;
+        this.startPointerPos = null;
+        this.selected = null;
+
+        if (targetRow >= 0 && targetRow < ROWS && targetCol >= 0 && targetCol < COLS) {
+          this.emit('swapRequested', row, col, targetRow, targetCol);
+        }
       }
     });
 
@@ -56,6 +87,7 @@ export class InputHandler extends EventEmitter<InputEvents> {
       this.selected = null;
       this.dragging = false;
       this.dragStart = null;
+      this.startPointerPos = null;
     }
   }
 
@@ -75,6 +107,7 @@ export class InputHandler extends EventEmitter<InputEvents> {
 
     this.dragging = true;
     this.dragStart = { row, col };
+    this.startPointerPos = { x: e.clientX, y: e.clientY };
 
     if (this.selected) {
       const { row: sr, col: sc } = this.selected;
@@ -101,7 +134,7 @@ export class InputHandler extends EventEmitter<InputEvents> {
     this.emit('cellSelected', row, col);
   }
 
-  /** Handle cell pointer-enter (drag) */
+  /** Handle cell pointer-enter (secondary fallback for desktop hover drag) */
   handlePointerEnter(row: number, col: number): void {
     if (!this._enabled || !this.dragging || !this.dragStart) return;
 
@@ -110,6 +143,7 @@ export class InputHandler extends EventEmitter<InputEvents> {
       const { row: sr, col: sc } = this.dragStart;
       this.selected = null;
       this.dragStart = null;
+      this.startPointerPos = null;
       this.emit('swapRequested', sr, sc, row, col);
     }
   }
@@ -127,9 +161,9 @@ export class InputHandler extends EventEmitter<InputEvents> {
     let nc = col;
 
     if (e.key === 'ArrowUp') nr = Math.max(0, row - 1);
-    else if (e.key === 'ArrowDown') nr = Math.min(7, row + 1);
+    else if (e.key === 'ArrowDown') nr = Math.min(ROWS - 1, row + 1);
     else if (e.key === 'ArrowLeft') nc = Math.max(0, col - 1);
-    else if (e.key === 'ArrowRight') nc = Math.min(7, col + 1);
+    else if (e.key === 'ArrowRight') nc = Math.min(COLS - 1, col + 1);
     else if (e.key === ' ' || e.key === 'Enter') {
       e.preventDefault();
       return;
@@ -153,5 +187,6 @@ export class InputHandler extends EventEmitter<InputEvents> {
     this.selected = null;
     this.dragging = false;
     this.dragStart = null;
+    this.startPointerPos = null;
   }
 }
