@@ -170,4 +170,28 @@ describe('GameState', () => {
     expect(movesEvents).toContain(MAX_MOVES);
     expect(comboEvents).toContain(0);
   });
+
+  // ── High Score & Stats ──────────────────────────────────────────
+
+  it('tracks and updates high score', () => {
+    state.incrementCombo();
+    state.addScore(10); // 100 pts
+    expect(state.highScore).toBeGreaterThanOrEqual(100);
+  });
+
+  it('tracks total gems crushed across cascades', () => {
+    state.addScore(3);
+    state.addScore(4);
+    expect(state.totalGemsCrushed).toBe(7);
+  });
+
+  it('tracks maximum combo reached in a game', () => {
+    state.incrementCombo();
+    state.incrementCombo();
+    state.incrementCombo();
+    expect(state.maxCombo).toBe(3);
+    state.resetCombo();
+    expect(state.combo).toBe(0);
+    expect(state.maxCombo).toBe(3);
+  });
 });
