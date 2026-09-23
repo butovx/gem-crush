@@ -13,7 +13,6 @@
   box-shadow:
     0 0 50px rgba(120, 80, 220, 0.25),
     inset 0 0 40px rgba(120, 80, 220, 0.15);
-  contain: layout paint;
   padding: var(--gap);
   display: grid;
   grid-template-columns: repeat(8, 1fr);
@@ -29,24 +28,15 @@
   position: relative;
   border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: transform 0.1s ease;
-  contain: layout style;
-  will-change: transform;
-  transform: translateZ(0);
-  backface-visibility: hidden;
 }
 
 .cell:hover {
-  transform: scale(1.06) translateZ(0);
+  transform: scale(1.08);
+  transition: transform 0.12s ease;
 }
 
 .cell.selected {
   animation: pulse-select 0.6s ease-in-out infinite;
-}
-
-.cell.empty .gem {
-  opacity: 0;
-  visibility: hidden;
 }
 
 /* ── Gem base ── */
@@ -55,10 +45,6 @@
   inset: 12%;
   border-radius: 50%;
   pointer-events: none;
-  will-change: transform, opacity;
-  transform: translateZ(0);
-  backface-visibility: hidden;
-  transition: opacity 0.15s ease;
 }
 
 .gem::before {

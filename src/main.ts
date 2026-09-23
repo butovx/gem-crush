@@ -174,6 +174,7 @@ async function cascade(): Promise<void> {
     for (const idx of matched) {
       board.setType(Math.floor(idx / COLS), idx % COLS, -1);
     }
+    renderBoard();
 
     // Apply gravity & animate drops
     const drops = board.applyGravity();

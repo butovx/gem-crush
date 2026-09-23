@@ -101,13 +101,14 @@ export class BoardRenderer {
         record.type = newType;
 
         if (newType < 0) {
-          record.cell.classList.add('empty');
-          record.cell.classList.remove('matching');
+          record.cell.className = 'cell empty';
           record.gem.className = 'gem';
+          record.gem.style.display = 'none';
           record.sym.textContent = '';
         } else {
-          record.cell.classList.remove('empty', 'matching');
+          record.cell.className = 'cell';
           record.gem.className = `gem gem-${newType}`;
+          record.gem.style.display = '';
           const config = GEM_CONFIGS[newType];
           record.sym.textContent = config ? config.symbol : '';
         }
