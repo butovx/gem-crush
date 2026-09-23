@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>✨ Gem Crush — Три в ряд</title>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+<canvas id="particle-canvas"></canvas>
+
+<div class="header">
+  <h1>✨ Gem Crush</h1>
+  <div class="stats">
+    <div class="stat-box">
+      <div class="stat-label">Очки</div>
+      <div class="stat-value" id="score">0</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Ходы</div>
+      <div class="stat-value" id="moves">30</div>
+      <div class="moves-bar">
+        <div class="moves-fill" id="moves-fill" style="width:100%"></div>
+      </div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Комбо</div>
+      <div class="stat-value" id="combo">×1</div>
+    </div>
+  </div>
+</div>
+
+<div class="board-wrap" id="board" role="grid" aria-label="Игровое поле"></div>
+
+<div class="footer">
+  <button class="btn btn-hint" id="btn-hint" aria-label="Показать подсказку">💡 Подсказка</button>
+  <button class="btn btn-primary" id="btn-new" aria-label="Начать новую игру">🔄 Новая игра</button>
+</div>
+
+<div class="combo-banner" id="combo-banner" role="status" aria-live="polite"></div>
+
+<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-label="Игра окончена">
+  <h2>Игра окончена!</h2>
+  <div class="final-score" id="final-score">0</div>
+  <p>Отличный результат! Попробуешь побить рекорд?</p>
+  <button class="btn btn-primary" id="btn-restart">🚀 Играть снова</button>
+</div>
+
+<script type="module" src="/src/main.ts"></script>
+</body>
+</html>
