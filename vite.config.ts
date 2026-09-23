@@ -1,6 +1,8 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
+  base: './',
+  // index.html at project root (standard Vite convention)
   build: {
     outDir: 'dist',
     sourcemap: true,
