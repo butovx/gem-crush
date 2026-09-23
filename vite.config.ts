@@ -1,7 +1,8 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  base: './',
+  // Production base URL for GitHub Pages /gem-crush/
+  base: process.env.NODE_ENV === 'production' ? '/gem-crush/' : '/',
   // index.html at project root (standard Vite convention)
   build: {
     outDir: 'dist',
