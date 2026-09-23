@@ -113,6 +113,12 @@ export class Board {
           emptyRow--;
         }
       }
+
+      // Fill empty top cells with new gems
+      for (let r = emptyRow; r >= 0; r--) {
+        this._grid[r][c] = this.randomType();
+        drops.push({ row: r, col: c, fromRow: r - (emptyRow - r + 1) });
+      }
     }
 
     return drops;
