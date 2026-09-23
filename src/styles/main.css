@@ -1,0 +1,56 @@
+/* ─────────────────────────────────────────────
+   Main Styles — Reset, variables, body
+   ───────────────────────────────────────────── */
+
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@600;800&display=swap');
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --board-size: 520px;
+  --cell: calc(var(--board-size) / 8);
+  --gap: 3px;
+
+  /* Color tokens */
+  --color-bg: #0a0015;
+  --color-text: #fff;
+  --color-text-muted: rgba(255, 255, 255, 0.5);
+  --color-glass: rgba(255, 255, 255, 0.07);
+  --color-glass-border: rgba(255, 255, 255, 0.12);
+  --color-glow-purple: rgba(120, 80, 220, 0.25);
+  --color-accent-gradient: linear-gradient(135deg, #ff6fd8, #ffd86f, #6fdfff);
+  --color-primary-gradient: linear-gradient(135deg, #9d4edd, #c77dff);
+  --color-hint-gradient: linear-gradient(135deg, #f5a623, #ffe066);
+  --color-progress-gradient: linear-gradient(90deg, #ff6fd8, #ffd86f);
+  --color-danger-gradient: linear-gradient(90deg, #ff4d6d, #ff8fa3);
+
+  /* Font tokens */
+  --font-display: 'Fredoka One', cursive;
+  --font-body: 'Nunito', sans-serif;
+
+  /* Radius tokens */
+  --radius-sm: 12px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-pill: 50px;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+}
