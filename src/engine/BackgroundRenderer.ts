@@ -64,7 +64,13 @@ export class BackgroundRenderer {
   }
 
   private startLoop(): void {
-    const draw = () => {
+    let lastTime = 0;
+    const draw = (timestamp: number) => {
+      if (timestamp - lastTime < 16) {
+        this.animFrameId = requestAnimationFrame(draw);
+        return;
+      }
+      lastTime = timestamp;
       const { ctx, width: w, height: h } = this;
       ctx.clearRect(0, 0, w, h);
 
