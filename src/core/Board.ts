@@ -81,4 +81,12 @@ export class Board {
 
     return [...matched];
   }
+
+  isAdjacent(r1: number, c1: number, r2: number, c2: number): boolean {
+    return Math.abs(r1 - r2) + Math.abs(c1 - c2) === 1;
+  }
+
+  swap(r1: number, c1: number, r2: number, c2: number): void {
+    [this._grid[r1][c1], this._grid[r2][c2]] = [this._grid[r2][c2], this._grid[r1][c1]];
+  }
 }
