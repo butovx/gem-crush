@@ -14,6 +14,8 @@ interface Particle {
   life: number;
   decay: number;
   gravity: number;
+  rotation?: number;
+  rotSpeed?: number;
 }
 
 /**
@@ -62,6 +64,8 @@ export class ParticleSystem {
         life: 1,
         decay: 0.015 + Math.random() * 0.02,
         gravity: 0.08,
+        rotation: Math.random() * Math.PI * 2,
+        rotSpeed: (Math.random() - 0.5) * 0.2,
       });
     }
   }
