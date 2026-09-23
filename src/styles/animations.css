@@ -31,13 +31,13 @@
 @keyframes gem-drop {
   0% {
     transform: translateY(var(--drop-from));
-    opacity: 0.5;
+    opacity: 0.6;
   }
-  60% {
-    transform: translateY(-4px);
+  65% {
+    transform: translateY(-6px);
     opacity: 1;
   }
-  80% {
+  85% {
     transform: translateY(2px);
   }
   100% {
