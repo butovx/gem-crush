@@ -131,6 +131,11 @@ export class ParticleSystem {
     this.animFrameId = requestAnimationFrame(draw);
   }
 
+  /** Trigger star shower effect */
+  starShower(): void {
+    this.burst(window.innerWidth / 2, window.innerHeight / 3, 50);
+  }
+
   /** Confetti celebration burst (e.g. on new high score or big combo) */
   burst(x: number, y: number, count = 30): void {
     const rainbowColors = ['#ff4d6d', '#ffd86f', '#40e87b', '#5fa8ff', '#c77dff', '#ffffff'];
