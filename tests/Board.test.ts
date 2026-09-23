@@ -189,4 +189,12 @@ describe('Board', () => {
     expect(Board.posToIndex(1, 0)).toBe(8);
     expect(Board.posToIndex(7, 7)).toBe(63);
   });
+
+  it('generates a grid that always contains at least one matchable pair', () => {
+    for (let testRun = 0; testRun < 5; testRun++) {
+      board.init();
+      const moves = board.findAllMoves();
+      expect(moves.length).toBeGreaterThan(0);
+    }
+  });
 });
