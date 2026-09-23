@@ -2,11 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <meta name="description" content="Gem Crush — A modern Match-3 puzzle game built with TypeScript, Canvas API, and Web Audio API." />
   <meta property="og:title" content="✨ Gem Crush — Match-3 Puzzle Game" />
   <meta property="og:description" content="A modern Match-3 puzzle game built with TypeScript, Canvas API, and Web Audio API." />
   <meta property="og:type" content="website" />
+
+  <!-- Telegram Mini App SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
   <!-- Preconnect for Google Fonts (loaded via CSS) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -23,6 +26,7 @@
 
 <!-- Header / Score -->
 <div class="header">
+  <div class="user-badge" id="user-badge" style="display:none"></div>
   <h1>✨ Gem Crush</h1>
   <div class="stats">
     <div class="stat-box">

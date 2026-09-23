@@ -20,6 +20,7 @@ import { AudioEngine } from './engine/AudioEngine';
 import { ParticleSystem } from './engine/ParticleSystem';
 import { BackgroundRenderer } from './engine/BackgroundRenderer';
 import { AnimationManager } from './engine/AnimationManager';
+import { TelegramService } from './engine/TelegramService';
 
 // UI
 import { BoardRenderer } from './ui/BoardRenderer';
@@ -34,6 +35,14 @@ import { getElementCenter, querySelector } from './utils/helpers';
 // ─────────────────────────────────────────────
 // Bootstrap
 // ─────────────────────────────────────────────
+
+// Telegram Mini App
+const telegram = new TelegramService();
+const userBadgeEl = document.getElementById('user-badge');
+if (userBadgeEl && telegram.user) {
+  userBadgeEl.textContent = `👋 ${telegram.user.first_name}`;
+  userBadgeEl.style.display = 'inline-flex';
+}
 
 // Core instances
 const board = new Board();
@@ -99,6 +108,7 @@ function showHint(): void {
   hintCells = [[move[0], move[1]], [move[2], move[3]]];
 
   animManager.showHint(hintCells);
+  telegram.hapticImpact('light');
 
   // Sparkle particles on hint cells
   for (const [r, c] of hintCells) {
@@ -142,6 +152,9 @@ async function cascade(): Promise<void> {
     if (state.combo >= 2) {
       comboOverlay.show(state.combo);
       audio.playCombo(state.combo);
+      telegram.hapticNotification('success');
+    } else {
+      telegram.hapticImpact('medium');
     }
 
     audio.playMatch(state.combo);
@@ -198,6 +211,7 @@ async function trySwap(r1: number, c1: number, r2: number, c2: number): Promise<
   input.enabled = false;
   clearHints();
   audio.playSwap();
+  telegram.hapticImpact('light');
 
   // Animate swap
   await animManager.animateSwap(r1, c1, r2, c2);
@@ -208,6 +222,7 @@ async function trySwap(r1: number, c1: number, r2: number, c2: number): Promise<
   const matched = board.findMatches();
   if (matched.length === 0) {
     audio.playNoMatch();
+    telegram.hapticNotification('error');
     // Swap back
     await animManager.animateSwap(r1, c1, r2, c2);
     board.swap(r1, c1, r2, c2);
@@ -257,6 +272,7 @@ input.on('cellSelected', (row, col) => {
   resetAutoHint();
   if (row >= 0 && col >= 0) {
     animManager.selectCell(row, col);
+    telegram.hapticSelection();
   }
 });
 
@@ -310,6 +326,7 @@ if (soundBtn) {
 state.on('highScoreChanged', (highScore) => {
   hud.updateHighScore(highScore);
   particles.starShower();
+  telegram.hapticNotification('success');
 });
 
 gameOverScreen.onRestart(newGame);
