@@ -10,25 +10,37 @@ export interface DropInfo {
   readonly fromRow: number;
 }
 
+/**
+ * Manages the match-3 game grid.
+ * Contains pure logic only — no DOM, no rendering, fully testable.
+ */
 export class Board {
   private _grid: number[][] = [];
 
+  /** Read-only access to the grid */
   get grid(): readonly (readonly number[])[] {
     return this._grid;
   }
 
+  /** Get the gem type at (row, col) */
   getType(row: number, col: number): number {
     return this._grid[row][col];
   }
 
+  /** Set the gem type at (row, col) */
   setType(row: number, col: number, type: number): void {
     this._grid[row][col] = type;
   }
 
+  /** Generate a random gem type [0, TYPES) */
   private randomType(): number {
     return Math.floor(Math.random() * TYPES);
   }
 
+  /**
+   * Initialize the grid with random gems,
+   * ensuring no initial matches of 3+ exist.
+   */
   init(): void {
     this._grid = [];
     for (let r = 0; r < ROWS; r++) {
@@ -44,8 +56,17 @@ export class Board {
         this._grid[r][c] = type;
       }
     }
+
+    // Guarantee at least one valid move exists
+    if (this.findAllMoves().length === 0) {
+      this.init();
+    }
   }
 
+  /**
+   * Find all matched gem positions (3+ in a row/column).
+   * @returns Array of flat indices (row * COLS + col)
+   */
   findMatches(): number[] {
     const matched = new Set<number>();
 
@@ -88,14 +109,21 @@ export class Board {
     return [...matched];
   }
 
+  /** Check if two cells are orthogonally adjacent */
   isAdjacent(r1: number, c1: number, r2: number, c2: number): boolean {
     return Math.abs(r1 - r2) + Math.abs(c1 - c2) === 1;
   }
 
+  /** Swap two gems on the grid */
   swap(r1: number, c1: number, r2: number, c2: number): void {
     [this._grid[r1][c1], this._grid[r2][c2]] = [this._grid[r2][c2], this._grid[r1][c1]];
   }
 
+  /**
+   * Apply gravity: gems fall down to fill empty (-1) cells,
+   * new random gems fill the top.
+   * @returns Array of drop info for animation
+   */
   applyGravity(): DropInfo[] {
     const drops: DropInfo[] = [];
 
@@ -122,5 +150,49 @@ export class Board {
     }
 
     return drops;
+  }
+
+  /**
+   * Find all possible valid moves.
+   * @returns Array of [r1, c1, r2, c2] swap pairs that would create a match
+   */
+  findAllMoves(): [number, number, number, number][] {
+    const moves: [number, number, number, number][] = [];
+
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        // Try swap right
+        if (c < COLS - 1) {
+          this.swap(r, c, r, c + 1);
+          if (this.findMatches().length > 0) {
+            moves.push([r, c, r, c + 1]);
+          }
+          this.swap(r, c, r, c + 1);
+        }
+        // Try swap down
+        if (r < ROWS - 1) {
+          this.swap(r, c, r + 1, c);
+          if (this.findMatches().length > 0) {
+            moves.push([r, c, r + 1, c]);
+          }
+          this.swap(r, c, r + 1, c);
+        }
+      }
+    }
+
+    return moves;
+  }
+
+  /** Convert a flat index to (row, col) */
+  static indexToPos(index: number): { row: number; col: number } {
+    return {
+      row: Math.floor(index / COLS),
+      col: index % COLS,
+    };
+  }
+
+  /** Convert (row, col) to flat index */
+  static posToIndex(row: number, col: number): number {
+    return row * COLS + col;
   }
 }
