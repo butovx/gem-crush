@@ -14,13 +14,16 @@ export class HUD {
   private movesEl: HTMLElement;
   private comboEl: HTMLElement;
   private movesFillEl: HTMLElement;
+  private highScoreEl?: HTMLElement | null;
 
   constructor(
     scoreEl: HTMLElement,
     movesEl: HTMLElement,
     comboEl: HTMLElement,
     movesFillEl: HTMLElement,
+    highScoreEl?: HTMLElement | null,
   ) {
+    this.highScoreEl = highScoreEl;
     this.scoreEl = scoreEl;
     this.movesEl = movesEl;
     this.comboEl = comboEl;
@@ -30,6 +33,13 @@ export class HUD {
   /** Update the score display */
   updateScore(score: number): void {
     this.scoreEl.textContent = score.toLocaleString();
+  }
+
+  /** Update the high score display */
+  updateHighScore(highScore: number): void {
+    if (this.highScoreEl) {
+      this.highScoreEl.textContent = highScore.toLocaleString();
+    }
   }
 
   /** Update the moves display and progress bar */
