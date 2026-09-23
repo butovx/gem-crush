@@ -36,8 +36,8 @@ export class GameOverScreen {
       if (msgEl) {
         msgEl.textContent =
           finalScore >= stats.best && finalScore > 0
-            ? '🎉 Новый личный рекорд! Превосходная игра!'
-            : 'Отличный результат! Попробуешь побить рекорд?';
+            ? '🎉 New Personal Record! Outstanding game!'
+            : 'Great job! Can you beat your high score?';
       }
     }
 

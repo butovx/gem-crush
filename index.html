@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-  <meta name="description" content="Gem Crush — современная браузерная игра три в ряд с анимациями, частицами и процедурными звуками." />
-  <meta property="og:title" content="✨ Gem Crush — Три в ряд" />
-  <meta property="og:description" content="Современная браузерная игра три в ряд на TypeScript + Web Audio API" />
+  <meta name="description" content="Gem Crush — A modern Match-3 puzzle game built with TypeScript, Canvas API, and Web Audio API." />
+  <meta property="og:title" content="✨ Gem Crush — Match-3 Puzzle Game" />
+  <meta property="og:description" content="A modern Match-3 puzzle game built with TypeScript, Canvas API, and Web Audio API." />
   <meta property="og:type" content="website" />
 
   <!-- Preconnect for Google Fonts (loaded via CSS) -->
@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-  <title>✨ Gem Crush — Три в ряд</title>
+  <title>✨ Gem Crush — Match-3 Puzzle Game</title>
 </head>
 <body>
 
@@ -26,51 +26,51 @@
   <h1>✨ Gem Crush</h1>
   <div class="stats">
     <div class="stat-box">
-      <div class="stat-label">Очки</div>
+      <div class="stat-label">Score</div>
       <div class="stat-value" id="score">0</div>
     </div>
     <div class="stat-box">
-      <div class="stat-label">Рекорд</div>
+      <div class="stat-label">Best</div>
       <div class="stat-value" id="high-score">0</div>
     </div>
     <div class="stat-box">
-      <div class="stat-label">Ходы</div>
+      <div class="stat-label">Moves</div>
       <div class="stat-value" id="moves">30</div>
       <div class="moves-bar">
         <div class="moves-fill" id="moves-fill" style="width:100%"></div>
       </div>
     </div>
     <div class="stat-box">
-      <div class="stat-label">Комбо</div>
+      <div class="stat-label">Combo</div>
       <div class="stat-value" id="combo">×1</div>
     </div>
   </div>
 </div>
 
 <!-- Game Board -->
-<div class="board-wrap" id="board" role="grid" aria-label="Игровое поле"></div>
+<div class="board-wrap" id="board" role="grid" aria-label="Game board"></div>
 
 <!-- Buttons -->
 <div class="footer">
-  <button class="btn btn-hint" id="btn-hint" aria-label="Показать подсказку">💡 Подсказка</button>
-  <button class="btn btn-icon" id="btn-sound" aria-label="Включить или отключить звук">🔊</button>
-  <button class="btn btn-primary" id="btn-new" aria-label="Начать новую игру">🔄 Новая игра</button>
+  <button class="btn btn-hint" id="btn-hint" aria-label="Show hint">💡 Hint</button>
+  <button class="btn btn-icon" id="btn-sound" aria-label="Toggle sound">🔊</button>
+  <button class="btn btn-primary" id="btn-new" aria-label="Start new game">🔄 New Game</button>
 </div>
 
 <!-- Combo banner -->
 <div class="combo-banner" id="combo-banner" role="status" aria-live="polite"></div>
 
 <!-- Game Over overlay -->
-<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-label="Игра окончена">
-  <h2>Игра окончена!</h2>
+<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-label="Game Over">
+  <h2>Game Over!</h2>
   <div class="final-score" id="final-score">0</div>
   <div class="game-over-stats" id="game-over-stats">
-    <div class="stat-chip">🏆 Рекорд: <b id="stat-best">0</b></div>
-    <div class="stat-chip">⚡ Макс. комбо: <b id="stat-combo">×1</b></div>
-    <div class="stat-chip">💎 Собрано камней: <b id="stat-gems">0</b></div>
+    <div class="stat-chip">🏆 Best: <b id="stat-best">0</b></div>
+    <div class="stat-chip">⚡ Max Combo: <b id="stat-combo">×1</b></div>
+    <div class="stat-chip">💎 Gems Crushed: <b id="stat-gems">0</b></div>
   </div>
-  <p id="game-over-msg">Отличный результат! Попробуешь побить рекорд?</p>
-  <button class="btn btn-primary" id="btn-restart">🚀 Играть снова</button>
+  <p id="game-over-msg">Great job! Can you beat your high score?</p>
+  <button class="btn btn-primary" id="btn-restart">🚀 Play Again</button>
 </div>
 
 <script type="module" src="/src/main.ts"></script>

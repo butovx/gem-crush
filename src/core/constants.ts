@@ -94,9 +94,9 @@ export const TIMING = {
 export const COMBO_TEXTS = [
   '',
   '',
-  'Двойное комбо! 🔥',
-  'Тройное комбо! 💥',
-  'МЕГА комбо! ⚡',
-  'НЕВЕРОЯТНО! 🌟',
-  'БЕЗУМИЕ! 💎',
+  'Double Combo! 🔥',
+  'Triple Combo! 💥',
+  'MEGA Combo! ⚡',
+  'UNBELIEVABLE! 🌟',
+  'INSANITY! 💎',
 ] as const;

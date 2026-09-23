@@ -25,7 +25,7 @@ export class ComboOverlay {
     const text =
       comboLevel < COMBO_TEXTS.length
         ? COMBO_TEXTS[comboLevel]
-        : `×${comboLevel} КОМБО! 🎆`;
+        : `×${comboLevel} COMBO! 🎆`;
 
     this.bannerEl.textContent = text;
     this.bannerEl.classList.add('show');
