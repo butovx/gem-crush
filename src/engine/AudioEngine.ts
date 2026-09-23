@@ -14,6 +14,14 @@ export class AudioEngine {
     return this._muted;
   }
 
+  /** Master volume multiplier (0.0 to 1.0) */
+  private volume = 1.0;
+
+  /** Set master volume */
+  setVolume(vol: number): void {
+    this.volume = Math.max(0, Math.min(1, vol));
+  }
+
   /** Toggle mute state */
   toggleMute(): boolean {
     this._muted = !this._muted;
