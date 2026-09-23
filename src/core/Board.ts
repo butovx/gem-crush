@@ -39,4 +39,46 @@ export class Board {
       }
     }
   }
+
+  findMatches(): number[] {
+    const matched = new Set<number>();
+
+    // Horizontal matches
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS - 2; c++) {
+        const type = this._grid[r][c];
+        if (type === -1) continue;
+
+        let len = 1;
+        while (c + len < COLS && this._grid[r][c + len] === type) len++;
+
+        if (len >= 3) {
+          for (let i = 0; i < len; i++) {
+            matched.add(r * COLS + c + i);
+          }
+        }
+        c += len - 1;
+      }
+    }
+
+    // Vertical matches
+    for (let c = 0; c < COLS; c++) {
+      for (let r = 0; r < ROWS - 2; r++) {
+        const type = this._grid[r][c];
+        if (type === -1) continue;
+
+        let len = 1;
+        while (r + len < ROWS && this._grid[r + len][c] === type) len++;
+
+        if (len >= 3) {
+          for (let i = 0; i < len; i++) {
+            matched.add((r + i) * COLS + c);
+          }
+        }
+        r += len - 1;
+      }
+    }
+
+    return [...matched];
+  }
 }
