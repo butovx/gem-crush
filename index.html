@@ -64,7 +64,12 @@
 <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-label="Игра окончена">
   <h2>Игра окончена!</h2>
   <div class="final-score" id="final-score">0</div>
-  <p>Отличный результат! Попробуешь побить рекорд?</p>
+  <div class="game-over-stats" id="game-over-stats">
+    <div class="stat-chip">🏆 Рекорд: <b id="stat-best">0</b></div>
+    <div class="stat-chip">⚡ Макс. комбо: <b id="stat-combo">×1</b></div>
+    <div class="stat-chip">💎 Собрано камней: <b id="stat-gems">0</b></div>
+  </div>
+  <p id="game-over-msg">Отличный результат! Попробуешь побить рекорд?</p>
   <button class="btn btn-primary" id="btn-restart">🚀 Играть снова</button>
 </div>
 

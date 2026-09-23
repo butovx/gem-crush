@@ -46,6 +46,26 @@
   font-size: 16px;
 }
 
+.game-over-stats {
+  display: flex;
+  gap: 12px;
+  margin: 8px 0 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.stat-chip {
+  background: var(--color-glass);
+  border: 1px solid var(--color-glass-border);
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+}
+
+.stat-chip b {
+  color: #ffd86f;
+}
+
 /* ── Combo banner ── */
 .combo-banner {
   position: fixed;

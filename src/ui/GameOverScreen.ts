@@ -20,9 +20,27 @@ export class GameOverScreen {
     this.restartBtn = restartBtn;
   }
 
-  /** Show the game-over overlay with the final score */
-  show(finalScore: number): void {
+  /** Show the game-over overlay with the final score and stats */
+  show(finalScore: number, stats?: { best: number; maxCombo: number; totalGems: number }): void {
     this.finalScoreEl.textContent = finalScore.toLocaleString();
+
+    if (stats) {
+      const bestEl = document.getElementById('stat-best');
+      const comboEl = document.getElementById('stat-combo');
+      const gemsEl = document.getElementById('stat-gems');
+      const msgEl = document.getElementById('game-over-msg');
+
+      if (bestEl) bestEl.textContent = stats.best.toLocaleString();
+      if (comboEl) comboEl.textContent = `×${stats.maxCombo}`;
+      if (gemsEl) gemsEl.textContent = String(stats.totalGems);
+      if (msgEl) {
+        msgEl.textContent =
+          finalScore >= stats.best && finalScore > 0
+            ? '🎉 Новый личный рекорд! Превосходная игра!'
+            : 'Отличный результат! Попробуешь побить рекорд?';
+      }
+    }
+
     this.overlayEl.classList.add('show');
   }
 
