@@ -10,6 +10,7 @@ export type GamePhase = 'idle' | 'animating' | 'gameOver';
 export interface GameEvents {
   [key: string]: unknown[];
   scoreChanged: [score: number];
+  highScoreChanged: [highScore: number];
   movesChanged: [moves: number];
   comboChanged: [combo: number];
   phaseChanged: [phase: GamePhase];
@@ -20,14 +21,48 @@ export interface GameEvents {
  * Manages game state: score, remaining moves, combo counter,
  * and game lifecycle phases. Emits typed events for UI updates.
  */
+const HIGH_SCORE_KEY = 'gem_crush_high_score';
+
 export class GameState extends EventEmitter<GameEvents> {
   private _score = 0;
+  private _highScore = 0;
   private _moves = MAX_MOVES;
   private _combo = 0;
   private _phase: GamePhase = 'idle';
 
+  constructor() {
+    super();
+    this._highScore = this.loadHighScore();
+  }
+
   get score(): number {
     return this._score;
+  }
+
+  get highScore(): number {
+    return this._highScore;
+  }
+
+  private loadHighScore(): number {
+    try {
+      if (typeof localStorage !== 'undefined') {
+        const saved = localStorage.getItem(HIGH_SCORE_KEY);
+        return saved ? parseInt(saved, 10) || 0 : 0;
+      }
+    } catch {
+      // Ignore
+    }
+    return 0;
+  }
+
+  private saveHighScore(score: number): void {
+    try {
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem(HIGH_SCORE_KEY, String(score));
+      }
+    } catch {
+      // Ignore
+    }
   }
 
   get moves(): number {
@@ -61,6 +96,11 @@ export class GameState extends EventEmitter<GameEvents> {
     const points = matchedCount * 10 * Math.max(1, this._combo);
     this._score += points;
     this.emit('scoreChanged', this._score);
+    if (this._score > this._highScore) {
+      this._highScore = this._score;
+      this.saveHighScore(this._highScore);
+      this.emit('highScoreChanged', this._highScore);
+    }
     return points;
   }
 
