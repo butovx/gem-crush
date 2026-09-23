@@ -58,6 +58,7 @@ const hud = new HUD(
   querySelector('#moves'),
   querySelector('#combo'),
   querySelector('#moves-fill'),
+  document.getElementById('high-score'),
 );
 const comboOverlay = new ComboOverlay(querySelector('#combo-banner'));
 const gameOverScreen = new GameOverScreen(
@@ -228,7 +229,11 @@ async function trySwap(r1: number, c1: number, r2: number, c2: number): Promise<
     setTimeout(() => {
       audio.playGameOver();
       state.triggerGameOver();
-      gameOverScreen.show(state.score);
+      gameOverScreen.show(state.score, {
+        best: state.highScore,
+        maxCombo: state.maxCombo,
+        totalGems: state.totalGemsCrushed,
+      });
     }, TIMING.GAME_OVER_DELAY);
   } else if (board.findAllMoves().length === 0) {
     // No valid moves left — reshuffle
@@ -273,6 +278,7 @@ function newGame(): void {
   renderBoard();
 
   hud.updateScore(0);
+  hud.updateHighScore(state.highScore);
   hud.updateMoves(state.moves);
   hud.updateCombo(0);
 
@@ -287,6 +293,20 @@ function newGame(): void {
 
 querySelector('#btn-hint').addEventListener('click', showHint);
 querySelector('#btn-new').addEventListener('click', newGame);
+
+const soundBtn = document.getElementById('btn-sound');
+if (soundBtn) {
+  soundBtn.addEventListener('click', () => {
+    const isMuted = audio.toggleMute();
+    soundBtn.textContent = isMuted ? '🔇' : '🔊';
+  });
+}
+
+state.on('highScoreChanged', (highScore) => {
+  hud.updateHighScore(highScore);
+  particles.starShower();
+});
+
 gameOverScreen.onRestart(newGame);
 
 // Unlock audio on first interaction
