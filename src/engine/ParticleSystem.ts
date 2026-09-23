@@ -131,6 +131,26 @@ export class ParticleSystem {
     this.animFrameId = requestAnimationFrame(draw);
   }
 
+  /** Confetti celebration burst (e.g. on new high score or big combo) */
+  burst(x: number, y: number, count = 30): void {
+    const rainbowColors = ['#ff4d6d', '#ffd86f', '#40e87b', '#5fa8ff', '#c77dff', '#ffffff'];
+    for (let i = 0; i < count; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 3 + Math.random() * 6;
+      this.particles.push({
+        x,
+        y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed - 2,
+        radius: 3 + Math.random() * 3,
+        color: rainbowColors[Math.floor(Math.random() * rainbowColors.length)],
+        life: 1.2,
+        decay: 0.015,
+        gravity: 0.1,
+      });
+    }
+  }
+
   /** Stop the render loop */
   destroy(): void {
     cancelAnimationFrame(this.animFrameId);
