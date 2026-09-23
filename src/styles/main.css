@@ -13,7 +13,7 @@
 }
 
 :root {
-  --board-size: 520px;
+  --board-size: min(92vw, 520px);
   --cell: calc(var(--board-size) / 8);
   --gap: 3px;
 
@@ -48,9 +48,24 @@ body {
   align-items: center;
   justify-content: center;
   background: var(--color-bg);
-  color: var(--color-text);
-  font-family: var(--font-body);
   overflow: hidden;
+  font-family: var(--font-body);
   user-select: none;
   -webkit-user-select: none;
+  touch-action: none;
+}
+
+/* ── Canvas layers ── */
+#bg-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+#particle-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
 }

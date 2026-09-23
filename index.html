@@ -2,13 +2,26 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="description" content="Gem Crush — современная браузерная игра три в ряд с анимациями, частицами и процедурными звуками." />
+  <meta property="og:title" content="✨ Gem Crush — Три в ряд" />
+  <meta property="og:description" content="Современная браузерная игра три в ряд на TypeScript + Web Audio API" />
+  <meta property="og:type" content="website" />
+
+  <!-- Preconnect for Google Fonts (loaded via CSS) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <title>✨ Gem Crush — Три в ряд</title>
 </head>
 <body>
+
+<!-- Background and particle canvases -->
 <canvas id="bg-canvas"></canvas>
 <canvas id="particle-canvas"></canvas>
 
+<!-- Header / Score -->
 <div class="header">
   <h1>✨ Gem Crush</h1>
   <div class="stats">
@@ -30,15 +43,19 @@
   </div>
 </div>
 
+<!-- Game Board -->
 <div class="board-wrap" id="board" role="grid" aria-label="Игровое поле"></div>
 
+<!-- Buttons -->
 <div class="footer">
   <button class="btn btn-hint" id="btn-hint" aria-label="Показать подсказку">💡 Подсказка</button>
   <button class="btn btn-primary" id="btn-new" aria-label="Начать новую игру">🔄 Новая игра</button>
 </div>
 
+<!-- Combo banner -->
 <div class="combo-banner" id="combo-banner" role="status" aria-live="polite"></div>
 
+<!-- Game Over overlay -->
 <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-label="Игра окончена">
   <h2>Игра окончена!</h2>
   <div class="final-score" id="final-score">0</div>
