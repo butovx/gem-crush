@@ -28,6 +28,8 @@ export class GameState extends EventEmitter<GameEvents> {
   private _highScore = 0;
   private _moves = MAX_MOVES;
   private _combo = 0;
+  private _maxCombo = 0;
+  private _totalGemsCrushed = 0;
   private _phase: GamePhase = 'idle';
 
   constructor() {
@@ -73,6 +75,14 @@ export class GameState extends EventEmitter<GameEvents> {
     return this._combo;
   }
 
+  get maxCombo(): number {
+    return this._maxCombo;
+  }
+
+  get totalGemsCrushed(): number {
+    return this._totalGemsCrushed;
+  }
+
   get phase(): GamePhase {
     return this._phase;
   }
@@ -93,6 +103,7 @@ export class GameState extends EventEmitter<GameEvents> {
 
   /** Add score based on matched gems count and current combo */
   addScore(matchedCount: number): number {
+    this._totalGemsCrushed += matchedCount;
     const points = matchedCount * 10 * Math.max(1, this._combo);
     this._score += points;
     this.emit('scoreChanged', this._score);
@@ -114,6 +125,7 @@ export class GameState extends EventEmitter<GameEvents> {
   /** Increment combo counter */
   incrementCombo(): void {
     this._combo++;
+    if (this._combo > this._maxCombo) this._maxCombo = this._combo;
     this.emit('comboChanged', this._combo);
   }
 
