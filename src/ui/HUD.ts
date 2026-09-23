@@ -30,9 +30,37 @@ export class HUD {
     this.movesFillEl = movesFillEl;
   }
 
-  /** Update the score display */
+  private displayedScore = 0;
+  private scoreAnimFrame = 0;
+
+  /** Update the score display with smooth interpolation */
   updateScore(score: number): void {
-    this.scoreEl.textContent = score.toLocaleString();
+    cancelAnimationFrame(this.scoreAnimFrame);
+    const start = this.displayedScore;
+    const diff = score - start;
+    if (diff === 0) {
+      this.scoreEl.textContent = score.toLocaleString();
+      return;
+    }
+
+    const duration = 250;
+    const startTime = performance.now();
+
+    const animate = (now: number) => {
+      const elapsed = now - startTime;
+      const progress = Math.min(1, elapsed / duration);
+      this.displayedScore = Math.floor(start + diff * progress);
+      this.scoreEl.textContent = this.displayedScore.toLocaleString();
+
+      if (progress < 1) {
+        this.scoreAnimFrame = requestAnimationFrame(animate);
+      } else {
+        this.displayedScore = score;
+        this.scoreEl.textContent = score.toLocaleString();
+      }
+    };
+
+    this.scoreAnimFrame = requestAnimationFrame(animate);
   }
 
   /** Update the high score display */
