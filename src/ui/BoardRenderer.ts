@@ -98,16 +98,15 @@ export class BoardRenderer {
         const record = this.cells[idx];
         const newType = board.getType(r, c);
 
-        if (record.type === newType) continue;
-
         record.type = newType;
 
         if (newType < 0) {
           record.cell.classList.add('empty');
+          record.cell.classList.remove('matching');
           record.gem.className = 'gem';
           record.sym.textContent = '';
         } else {
-          record.cell.classList.remove('empty');
+          record.cell.classList.remove('empty', 'matching');
           record.gem.className = `gem gem-${newType}`;
           const config = GEM_CONFIGS[newType];
           record.sym.textContent = config ? config.symbol : '';

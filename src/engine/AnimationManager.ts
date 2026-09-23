@@ -61,6 +61,13 @@ export class AnimationManager {
     }
 
     await delay(TIMING.MATCH_POP);
+
+    for (const idx of indices) {
+      const row = Math.floor(idx / COLS);
+      const col = idx % COLS;
+      const cell = this.getCell(row, col);
+      cell?.classList.remove('matching');
+    }
   }
 
   /**
@@ -80,7 +87,11 @@ export class AnimationManager {
     await delay(TIMING.GRAVITY_DROP);
 
     for (const drop of drops) {
-      this.getCell(drop.row, drop.col)?.classList.remove('dropping');
+      const cell = this.getCell(drop.row, drop.col);
+      if (cell) {
+        cell.classList.remove('dropping');
+        cell.style.removeProperty('--drop-from');
+      }
     }
   }
 

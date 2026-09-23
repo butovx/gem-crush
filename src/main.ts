@@ -297,8 +297,12 @@ querySelector('#btn-new').addEventListener('click', newGame);
 const soundBtn = document.getElementById('btn-sound');
 if (soundBtn) {
   soundBtn.addEventListener('click', () => {
+    audio.unlock();
     const isMuted = audio.toggleMute();
     soundBtn.textContent = isMuted ? '🔇' : '🔊';
+    if (!isMuted) {
+      audio.playSwap();
+    }
   });
 }
 
@@ -309,15 +313,15 @@ state.on('highScoreChanged', (highScore) => {
 
 gameOverScreen.onRestart(newGame);
 
-// Unlock audio on first interaction
-document.addEventListener(
-  'pointerdown',
-  () => {
-    audio.unlock();
-    resetAutoHint();
-  },
-  { once: true },
-);
+// Unlock audio on user interaction (Safari/WebKit requires click/touchend)
+const unlockAudio = (): void => {
+  audio.unlock();
+  resetAutoHint();
+};
+window.addEventListener('click', unlockAudio, { passive: true });
+window.addEventListener('pointerdown', unlockAudio, { passive: true });
+window.addEventListener('touchend', unlockAudio, { passive: true });
+window.addEventListener('keydown', unlockAudio, { passive: true });
 
 // ─────────────────────────────────────────────
 // Start!
