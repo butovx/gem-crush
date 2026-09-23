@@ -65,4 +65,11 @@
 .combo-banner.show {
   transform: translate(-50%, -50%) scale(1);
   opacity: 1;
+  animation: combo-pulse 0.4s ease-out;
+}
+
+@keyframes combo-pulse {
+  0% { transform: translate(-50%, -50%) scale(0.6); }
+  60% { transform: translate(-50%, -50%) scale(1.15); }
+  100% { transform: translate(-50%, -50%) scale(1); }
 }
