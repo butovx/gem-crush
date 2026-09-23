@@ -59,4 +59,33 @@ describe('Board', () => {
     expect(matches).toContain(1 * COLS + 0);
     expect(matches).toContain(2 * COLS + 0);
   });
+
+  // ── Adjacency ───────────────────────────────────────────────────
+
+  it('correctly identifies adjacent cells', () => {
+    expect(board.isAdjacent(0, 0, 0, 1)).toBe(true);
+    expect(board.isAdjacent(0, 0, 1, 0)).toBe(true);
+    expect(board.isAdjacent(0, 0, 1, 1)).toBe(false);
+    expect(board.isAdjacent(0, 0, 2, 0)).toBe(false);
+    expect(board.isAdjacent(3, 3, 3, 3)).toBe(false);
+  });
+
+  // ── Swap ────────────────────────────────────────────────────────
+
+  it('swaps two gems correctly', () => {
+    board.setType(0, 0, 1);
+    board.setType(0, 1, 2);
+    board.swap(0, 0, 0, 1);
+    expect(board.getType(0, 0)).toBe(2);
+    expect(board.getType(0, 1)).toBe(1);
+  });
+
+  it('is reversible by swapping again', () => {
+    const original00 = board.getType(2, 2);
+    const original01 = board.getType(2, 3);
+    board.swap(2, 2, 2, 3);
+    board.swap(2, 2, 2, 3);
+    expect(board.getType(2, 2)).toBe(original00);
+    expect(board.getType(2, 3)).toBe(original01);
+  });
 });
