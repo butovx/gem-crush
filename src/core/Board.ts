@@ -4,6 +4,12 @@
 
 import { ROWS, COLS, TYPES } from './constants';
 
+export interface DropInfo {
+  readonly row: number;
+  readonly col: number;
+  readonly fromRow: number;
+}
+
 export class Board {
   private _grid: number[][] = [];
 
@@ -88,5 +94,27 @@ export class Board {
 
   swap(r1: number, c1: number, r2: number, c2: number): void {
     [this._grid[r1][c1], this._grid[r2][c2]] = [this._grid[r2][c2], this._grid[r1][c1]];
+  }
+
+  applyGravity(): DropInfo[] {
+    const drops: DropInfo[] = [];
+
+    for (let c = 0; c < COLS; c++) {
+      let emptyRow = ROWS - 1;
+
+      // Move existing gems down
+      for (let r = ROWS - 1; r >= 0; r--) {
+        if (this._grid[r][c] !== -1) {
+          if (r !== emptyRow) {
+            this._grid[emptyRow][c] = this._grid[r][c];
+            this._grid[r][c] = -1;
+            drops.push({ row: emptyRow, col: c, fromRow: r });
+          }
+          emptyRow--;
+        }
+      }
+    }
+
+    return drops;
   }
 }
