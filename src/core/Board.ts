@@ -68,16 +68,17 @@ export class Board {
    * @returns Array of flat indices (row * COLS + col)
    */
   findMatches(): number[] {
+    const grid = this._grid;
     const matched = new Set<number>();
 
     // Horizontal matches
     for (let r = 0; r < ROWS; r++) {
       for (let c = 0; c < COLS - 2; c++) {
-        const type = this._grid[r][c];
+        const type = grid[r][c];
         if (type === -1) continue;
 
         let len = 1;
-        while (c + len < COLS && this._grid[r][c + len] === type) len++;
+        while (c + len < COLS && grid[r][c + len] === type) len++;
 
         if (len >= 3) {
           for (let i = 0; i < len; i++) {
