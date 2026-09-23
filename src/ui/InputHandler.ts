@@ -26,6 +26,14 @@ export class InputHandler extends EventEmitter<InputEvents> {
     document.addEventListener('pointerup', () => {
       this.dragging = false;
     });
+
+    // Keyboard navigation (Arrow keys + Enter/Space)
+    document.addEventListener('keydown', (e: KeyboardEvent) => {
+      if (!this._enabled) return;
+      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' ', 'Enter'].includes(e.key)) {
+        this.handleKeyboard(e);
+      }
+    });
   }
 
   /** Enable or disable input processing */
@@ -90,6 +98,40 @@ export class InputHandler extends EventEmitter<InputEvents> {
       this.selected = null;
       this.dragStart = null;
       this.emit('swapRequested', sr, sc, row, col);
+    }
+  }
+
+  /** Handle keyboard controls */
+  private handleKeyboard(e: KeyboardEvent): void {
+    if (!this.selected) {
+      this.selected = { row: 3, col: 3 };
+      this.emit('cellSelected', 3, 3);
+      return;
+    }
+
+    const { row, col } = this.selected;
+    let nr = row;
+    let nc = col;
+
+    if (e.key === 'ArrowUp') nr = Math.max(0, row - 1);
+    else if (e.key === 'ArrowDown') nr = Math.min(7, row + 1);
+    else if (e.key === 'ArrowLeft') nc = Math.max(0, col - 1);
+    else if (e.key === 'ArrowRight') nc = Math.min(7, col + 1);
+    else if (e.key === ' ' || e.key === 'Enter') {
+      e.preventDefault();
+      return;
+    }
+
+    if (nr !== row || nc !== col) {
+      e.preventDefault();
+      if (e.shiftKey) {
+        // Shift + Arrow swaps immediately
+        this.selected = null;
+        this.emit('swapRequested', row, col, nr, nc);
+      } else {
+        this.selected = { row: nr, col: nc };
+        this.emit('cellSelected', nr, nc);
+      }
     }
   }
 
