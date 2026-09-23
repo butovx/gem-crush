@@ -49,6 +49,7 @@ body {
   justify-content: center;
   background: var(--color-bg);
   overflow: hidden;
+  overscroll-behavior: none;
   font-family: var(--font-body);
   user-select: none;
   -webkit-user-select: none;
