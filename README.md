@@ -77,6 +77,9 @@ InputHandler ──(swapRequested)──► main.trySwap()
 | Swap gems | Click adjacent gem, or drag |
 | Hint | Click 💡 or wait 8 seconds |
 | New Game | Click 🔄 |
+| Sound On/Off | Click 🔊 / 🔇 |
+| Keyboard Move | Arrow keys |
+| Keyboard Swap | Shift + Arrow keys |
 | Cascade combos | Chain matches after gravity for score multiplier |
 
 **Scoring:** Each matched gem = 10 points × combo multiplier. Combos stack as long as the board cascades without input.
