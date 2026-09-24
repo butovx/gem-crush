@@ -15,15 +15,16 @@
 
 @keyframes gem-pop {
   0% {
-    transform: scale(1);
+    transform: scale(1) rotate(0deg);
     opacity: 1;
   }
-  50% {
-    transform: scale(1.4);
-    opacity: 0.6;
+  35% {
+    transform: scale(1.35) rotate(15deg);
+    filter: brightness(1.8) drop-shadow(0 0 16px rgba(255, 255, 255, 0.9));
+    opacity: 1;
   }
   100% {
-    transform: scale(0);
+    transform: scale(0) rotate(45deg);
     opacity: 0;
   }
 }

@@ -1,14 +1,14 @@
 // ─────────────────────────────────────────────
-// Board Renderer — High-performance persistent DOM grid
+// Board Renderer — High-performance persistent DOM grid with vector crystal gemstones
 // ─────────────────────────────────────────────
 
 import { ROWS, COLS, GEM_CONFIGS } from '../core/constants';
 import type { Board } from '../core/Board';
+import { ensureGemDefs, GEM_CRYSTAL_SVGS } from './gemCrystals';
 
 interface CellRecord {
   cell: HTMLElement;
   gem: HTMLElement;
-  sym: HTMLElement;
   type: number;
 }
 
@@ -31,9 +31,11 @@ export class BoardRenderer {
   }
 
   /**
-   * Initializes the persistent DOM grid once.
+   * Initializes the persistent DOM grid once and registers shared crystal defs.
    */
   initGrid(onPointerDown?: PointerDownFn, onPointerEnter?: PointerEnterFn): void {
+    ensureGemDefs();
+
     if (onPointerDown) this.onPointerDown = onPointerDown;
     if (onPointerEnter) this.onPointerEnter = onPointerEnter;
 
@@ -56,10 +58,6 @@ export class BoardRenderer {
 
         const gem = document.createElement('div');
         gem.className = 'gem';
-
-        const sym = document.createElement('span');
-        sym.className = 'sym';
-        gem.appendChild(sym);
         cell.appendChild(gem);
 
         cell.addEventListener('pointerdown', (e) => {
@@ -70,7 +68,7 @@ export class BoardRenderer {
         });
 
         fragment.appendChild(cell);
-        this.cells.push({ cell, gem, sym, type: -1 });
+        this.cells.push({ cell, gem, type: -1 });
       }
     }
 
@@ -98,19 +96,25 @@ export class BoardRenderer {
         const record = this.cells[idx];
         const newType = board.getType(r, c);
 
-        record.type = newType;
-
         if (newType < 0) {
-          record.cell.className = 'cell empty';
-          record.gem.className = 'gem';
-          record.gem.style.display = 'none';
-          record.sym.textContent = '';
+          if (record.type !== -1) {
+            record.cell.className = 'cell empty';
+            record.gem.className = 'gem';
+            record.gem.style.display = 'none';
+            record.gem.innerHTML = '';
+            record.cell.removeAttribute('aria-label');
+            record.type = -1;
+          }
         } else {
-          record.cell.className = 'cell';
-          record.gem.className = `gem gem-${newType}`;
-          record.gem.style.display = '';
-          const config = GEM_CONFIGS[newType];
-          record.sym.textContent = config ? config.symbol : '';
+          if (record.type !== newType) {
+            record.cell.className = 'cell';
+            record.gem.className = `gem gem-${newType}`;
+            record.gem.style.display = '';
+            record.gem.innerHTML = GEM_CRYSTAL_SVGS[newType] ?? '';
+            const config = GEM_CONFIGS[newType];
+            record.cell.setAttribute('aria-label', config ? config.name : `Gem ${newType}`);
+            record.type = newType;
+          }
         }
       }
     }
